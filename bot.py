@@ -15,31 +15,27 @@ logging.basicConfig(level=logging.INFO)
 
 def generate_ai_caption():
     if not DEEPINFRA_API_KEY:
-        return "ИИ сегодня отдыхает 😴"
+        return "❌ Ошибка: DEEPINFRA_API_KEY не задан!"
     try:
-        url = "https://api.deepinfra.com/v1/openai/chat/completions"
-        data = {
-            "model": "meta-llama/Meta-Llama-3-8B-Instruct",
-            "messages": [
-                {"role": "system", "content": "Ты — автор канала о видео от ИИ. Пиши короткие, смешные подписи на русском. Без хештегов."},
-                {"role": "user", "content": "Напиши подпись к новому видео."}
-            ],
-            "max_tokens": 80,
-            "temperature": 0.9
-        }
-        headers = {
-            "Authorization": f"Bearer {DEEPINFRA_API_KEY}",
-            "Content-Type": "application/json"
-        }
-
-        # Создаём запрос через urllib
-        req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers)
-        with urllib.request.urlopen(req) as response:
-            result = json.loads(response.read().decode('utf-8'))
-            return result["choices"][0]["message"]["content"].strip()
+        response = requests.post(
+            "https://api.deepinfra.com/v1/openai/chat/completions",
+            headers={"Authorization": f"Bearer {DEEPINFRA_API_KEY}"},
+            json={
+                "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+                "messages": [
+                    {"role": "system", "content": "Ты — автор канала о видео от ИИ. Пиши короткие, смешные подписи на русском. Без хештегов."},
+                    {"role": "user", "content": "Напиши подпись к новому видео."}
+                ],
+                "max_tokens": 80,
+                "temperature": 0.9
+            },
+            timeout=15
+        )
+        if response.status_code != 200:
+            return f"❌ API ошибка: {response.status_code} — {response.text[:100]}"
+        return response.json()["choices"][0]["message"]["content"].strip()
     except Exception as e:
-        logging.error(f"Ошибка: {e}")
-        return "Новое видео от будущего! 🤖"
+        return f"💥 Ошибка: {str(e)[:150]}"
 
 async def make_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ALLOWED_USER_ID:
@@ -58,3 +54,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
