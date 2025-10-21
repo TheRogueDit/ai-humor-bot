@@ -35,15 +35,12 @@ def generate_ai_caption():
         return "Новое видео от будущего! 🤖"
 
 async def make_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🔍 Команда получена!")
     if update.effective_user.id != ALLOWED_USER_ID:
         await update.message.reply_text("🚫 Не твоё!")
         return
-
     await update.message.reply_text("🧠 Думаю...")
     caption = generate_ai_caption()
-    full_text = f"{caption}\n\nСоздано с помощью [ИИ 🤖](https://t.me/IIHumorFuture)"
-    
+    full_text = f"{caption}\nСоздано с помощью [ИИ 🤖](https://t.me/IIHumorFuture)"
     await context.bot.send_message(chat_id=CHANNEL_ID, text=full_text, parse_mode="Markdown")
     await update.message.reply_text("✅ Готово!")
 
@@ -54,4 +51,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
