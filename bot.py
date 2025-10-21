@@ -1,8 +1,6 @@
 import os
 import logging
-import urllib.request
-import urllib.parse
-import json
+import requests  # ← ЭТА СТРОКА ОБЯЗАТЕЛЬНА!
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -15,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 def generate_ai_caption():
     if not DEEPINFRA_API_KEY:
-        return "❌ Ошибка: DEEPINFRA_API_KEY не задан!"
+        return "ИИ сегодня отдыхает 😴"
     try:
         response = requests.post(
             "https://api.deepinfra.com/v1/openai/chat/completions",
@@ -29,13 +27,12 @@ def generate_ai_caption():
                 "max_tokens": 80,
                 "temperature": 0.9
             },
-            timeout=15
+            timeout=10
         )
-        if response.status_code != 200:
-            return f"❌ API ошибка: {response.status_code} — {response.text[:100]}"
         return response.json()["choices"][0]["message"]["content"].strip()
     except Exception as e:
-        return f"💥 Ошибка: {str(e)[:150]}"
+        logging.error(f"Ошибка: {e}")
+        return "Новое видео от будущего! 🤖"
 
 async def make_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.effective_user.id != ALLOWED_USER_ID:
@@ -54,4 +51,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
