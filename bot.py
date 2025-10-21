@@ -1,6 +1,6 @@
 import os
 import logging
-import requests  # ← ЭТА СТРОКА ОБЯЗАТЕЛЬНА!
+import requests
 from telegram import Update
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -51,3 +51,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
