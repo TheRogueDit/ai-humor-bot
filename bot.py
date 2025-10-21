@@ -35,6 +35,7 @@ def generate_ai_caption():
         return "Новое видео от будущего! 🤖"
 
 async def make_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("🔍 Команда получена!")
     if update.effective_user.id != ALLOWED_USER_ID:
         await update.message.reply_text("🚫 Не твоё!")
         return
@@ -53,3 +54,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
